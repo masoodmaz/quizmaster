@@ -33,27 +33,58 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Card-like format for questions */
+/* Added styles for card format for quiz questions */
 .card-question {
-    background-color: #f9f9f9; /* Light gray background */
-    border: 2px solid #e0e0e0; /* Subtle border */
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    text-align: center;
-    animation: pop-in 0.5s ease-out;
+    background-color: #ffffff; /* White background for better contrast */
+    border: 2px solid #d1d5db; /* Light gray border */
+    border-radius: 1rem; /* Rounded corners */
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-bottom: 1.5rem;
+    text-align: left;
+    animation: fade-in 0.3s ease-in-out;
 }
 
-/* Animation for card appearance */
-@keyframes pop-in {
+.card-question .arabic-text {
+    font-size: 2rem; /* Slightly smaller font size for better fit */
+    color: #374151; /* Darker gray for readability */
+    margin-bottom: 1rem;
+}
+
+.card-question .options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Space between options */
+}
+
+.card-question .option-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb; /* Light gray border */
+    border-radius: 0.5rem;
+    background-color: #f9fafb; /* Very light gray background */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.card-question .option-item:hover {
+    background-color: #e5e7eb; /* Slightly darker gray on hover */
+    transform: scale(1.02); /* Slight zoom effect */
+}
+
+.card-question .option-item input[type="radio"] {
+    margin-right: 0.75rem; /* Space between radio button and label */
+}
+
+@keyframes fade-in {
     from {
-        transform: scale(0.9);
         opacity: 0;
+        transform: translateY(-10px);
     }
     to {
-        transform: scale(1);
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
