@@ -1,0 +1,74 @@
+/* Custom styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6; /* Light gray background */
+}
+/* Style for Arabic text */
+.arabic-text {
+    font-size: 2.5rem; /* Larger font size for Arabic */
+    font-family: 'Times New Roman', Times, serif; /* Common font for Arabic */
+    direction: rtl; /* Right-to-left text direction */
+    margin-bottom: 1rem;
+    color: #1f2937; /* Dark gray text */
+}
+/* Tactile button styles for quizzes */
+.btn-tactile {
+    background-color: #4caf50; /* Green background */
+    color: white;
+    font-weight: bold;
+    border: 2px solid #388e3c; /* Darker green border */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.btn-tactile:hover {
+    background-color: #45a049; /* Slightly lighter green */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-tactile:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Card-like format for questions */
+.card-question {
+    background-color: #f9f9f9; /* Light gray background */
+    border: 2px solid #e0e0e0; /* Subtle border */
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    text-align: center;
+    animation: pop-in 0.5s ease-out;
+}
+
+/* Animation for card appearance */
+@keyframes pop-in {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Gamified elements */
+.quiz-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ff9800; /* Orange color */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+}
+
+.quiz-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2196f3; /* Blue color */
+    margin-bottom: 1rem;
+}
