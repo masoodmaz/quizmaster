@@ -357,7 +357,8 @@ function init() {
     for (let i = 1; i <= quizSets.length; i++) {
         const button = document.createElement('button');
         button.textContent = `Quiz ${i}`;
-        button.classList.add('btn', 'btn-primary');
+        button.classList.add('btn', 'btn-primary'); // Use the new primary blue style
+
         button.onclick = () => startQuiz(i);
         quizSelectionContainer.appendChild(button);
     }

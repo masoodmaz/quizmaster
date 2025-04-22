@@ -1,7 +1,7 @@
 /* Custom styles */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6; /* Light gray background */
+    background-color: #eef2f7; /* Lighter blue-gray background */
 }
 /* Style for Arabic text */
 .arabic-text {
@@ -11,26 +11,59 @@ body {
     margin-bottom: 1rem;
     color: #1f2937; /* Dark gray text */
 }
-/* Tactile button styles for quizzes */
-.btn-tactile {
-    background-color: #4caf50; /* Green background */
-    color: white;
-    font-weight: bold;
-    border: 2px solid #388e3c; /* Darker green border */
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+
+/* --- Base Button Style (Leveraging Tailwind where possible) --- */
+.btn {
+    padding: 0.6rem 1.2rem; /* Adjusted padding */
+    border-radius: 0.375rem; /* Tailwind's rounded-md */
+    font-weight: 500; /* Tailwind's font-medium */
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
     cursor: pointer;
+    border: 1px solid transparent; /* Base border */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
 
-.btn-tactile:hover {
-    background-color: #45a049; /* Slightly lighter green */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
 }
 
-.btn-tactile:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* --- Primary Button Style (Blue) --- */
+.btn-primary {
+    background-color: #3b82f6; /* Tailwind's blue-500 */
+    color: white;
+    border-color: #2563eb; /* Tailwind's blue-600 */
+}
+
+.btn-primary:hover {
+    background-color: #2563eb; /* Tailwind's blue-600 */
+    border-color: #1d4ed8; /* Tailwind's blue-700 */
+}
+
+/* --- Secondary Button Style (Gray) --- */
+.btn-secondary {
+    background-color: #6b7280; /* Tailwind's gray-500 */
+    color: white;
+    border-color: #4b5563; /* Tailwind's gray-600 */
+}
+
+.btn-secondary:hover {
+    background-color: #4b5563; /* Tailwind's gray-600 */
+    border-color: #374151; /* Tailwind's gray-700 */
+}
+
+/* --- Review Outline Button Style --- */
+.btn-review-outline {
+    background-color: transparent;
+    color: #3b82f6; /* Tailwind's blue-500 */
+    border-color: #3b82f6; /* Tailwind's blue-500 */
+}
+
+.btn-review-outline:hover {
+    background-color: #eff6ff; /* Tailwind's blue-50 */
+    color: #2563eb; /* Tailwind's blue-600 */
+    border-color: #2563eb; /* Tailwind's blue-600 */
 }
 
 /* Added styles for card format for quiz questions */
