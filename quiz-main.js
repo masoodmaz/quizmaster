@@ -15,7 +15,7 @@ const scoreList = document.getElementById('score-list');
 const noScoresMessage = document.getElementById('no-scores');
 const resetScoresButton = document.getElementById('reset-all-scores');
 const muteButton = document.getElementById('mute-button'); // Mute button element
-const muteIcon = muteButton.querySelector('i'); // Icon within the mute button
+const toggleScoresButton = document.getElementById('toggle-scores-button'); // Add this
 
 const quizTitleEl = document.getElementById('quiz-title');
 const scoreEl = document.getElementById('score');
@@ -111,77 +111,114 @@ function playCongratsSound() {
 }
 
 // --- Cookie Helper Functions ---
+/* // Commenting out cookie functions as we are switching to localStorage
 function setCookie(name, value, days) { let expires = ""; if (days) { const date = new Date(); date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); expires = "; expires=" + date.toUTCString(); } document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax"; }
 function getCookie(name) { const nameEQ = name + "="; const ca = document.cookie.split(';'); for (let i = 0; i < ca.length; i++) { let c = ca[i]; while (c.charAt(0) === ' ') c = c.substring(1, c.length); if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length); } return null; }
 function deleteCookie(name) { document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax;'; }
+*/
 
 // --- Utility Functions ---
 function shuffleArray(array) { let currentIndex = array.length, randomIndex; while (currentIndex !== 0) { randomIndex = Math.floor(Math.random() * currentIndex); currentIndex--; [array[currentIndex], array[randomIndex]] = [ array[randomIndex], array[currentIndex]]; } return array; }
 function getIncorrectOptions(correctMeaning, count = 3) { const incorrectOptions = new Set(); const allMeanings = words.map(w => w.meaning); while (incorrectOptions.size < count) { const randomIndex = Math.floor(Math.random() * allMeanings.length); const randomMeaning = allMeanings[randomIndex]; if (randomMeaning !== correctMeaning) { incorrectOptions.add(randomMeaning); } } return Array.from(incorrectOptions); }
 function updateScoreDisplay() {
-    scoreList.innerHTML = '';
+    if (!scoreList || !overallScoresContainer) { // Removed noScoresMessage check here, handle inside
+        console.error("Score display elements (scoreList or overallScoresContainer) not found!");
+        return; // Exit if elements aren't ready
+    }
+    scoreList.innerHTML = ''; // Clear previous scores
     const completedQuizzes = Object.keys(quizScores).length;
+
     if (completedQuizzes === 0) {
-        if(noScoresMessage) { noScoresMessage.classList.remove('hidden'); scoreList.appendChild(noScoresMessage); }
+        // Create and append the 'no scores' message dynamically
+        const li = document.createElement('li');
+        li.id = 'no-scores';
+        li.className = 'text-center text-gray-500 italic'; // Match HTML classes
+        li.textContent = 'No scores recorded yet.';
+        li.style.backgroundColor = 'transparent'; // Ensure no background
+        li.style.border = 'none'; // Ensure no border
+        li.style.justifyContent = 'center';
+        scoreList.appendChild(li);
+        // Hide reset button if it exists
+        if (resetScoresButton) resetScoresButton.classList.add('hidden');
     } else {
-         if(noScoresMessage) { noScoresMessage.classList.add('hidden'); }
+         // Remove 'no scores' message if it exists from a previous state
+         const existingNoScores = scoreList.querySelector('#no-scores');
+         if (existingNoScores) existingNoScores.remove();
+
          Object.keys(quizScores)
             .sort((a, b) => parseInt(a.split('_')[1]) - parseInt(b.split('_')[1]))
             .forEach(quizKey => {
                 const quizNum = parseInt(quizKey.split('_')[1]);
                 const quizIndex = quizNum - 1;
-                const totalQuestions = (quizSets.length > quizIndex && quizSets[quizIndex]) ? quizSets[quizIndex].length : WORDS_PER_QUIZ;
+                // Ensure quizSets is populated before accessing length
+                const totalQuestions = (quizSets && quizSets.length > quizIndex && quizSets[quizIndex]) ? quizSets[quizIndex].length : WORDS_PER_QUIZ;
                 const scoreValue = quizScores[quizKey];
                 const li = document.createElement('li');
+                // Use innerHTML carefully or create elements programmatically
                 li.innerHTML = `<span>Quiz ${quizNum}</span> <span class="font-medium">${scoreValue} / ${totalQuestions}</span>`;
                 scoreList.appendChild(li);
          });
+         // Show reset button if it exists
+         if (resetScoresButton) resetScoresButton.classList.remove('hidden');
     }
 }
 
-// --- Score Persistence (Using Cookies) ---
+// --- Score Persistence (Using localStorage) ---
 function loadScores() {
-    const storedScores = getCookie('quranQuizScores');
+    const storedScores = localStorage.getItem('quranQuizScores'); // Use localStorage.getItem
     if (storedScores) {
-        try { quizScores = JSON.parse(storedScores); }
-        catch (e) { console.error("Error parsing scores from cookie:", e); quizScores = {}; }
-    } else { quizScores = {}; }
+        try {
+            quizScores = JSON.parse(storedScores);
+        } catch (e) {
+            console.error("Error parsing scores from localStorage:", e);
+            quizScores = {};
+        }
+    } else {
+        quizScores = {};
+    }
     updateScoreDisplay();
 }
+
 function saveScores() {
-    try { const scoresString = JSON.stringify(quizScores); setCookie('quranQuizScores', scoresString, 365); }
-    catch (e) { console.error("Error stringifying scores for cookie:", e); }
+    try {
+        const scoresString = JSON.stringify(quizScores);
+        localStorage.setItem('quranQuizScores', scoresString); // Use localStorage.setItem
+    } catch (e) {
+        console.error("Error stringifying scores for localStorage:", e);
+    }
     updateScoreDisplay();
 }
+
 function resetAllScores() {
      if (confirm("Are you sure you want to reset all your scores? This cannot be undone.")) {
-         deleteCookie('quranQuizScores'); quizScores = {}; updateScoreDisplay();
+         localStorage.removeItem('quranQuizScores'); // Use localStorage.removeItem
+         quizScores = {};
+         updateScoreDisplay();
      }
 }
 
-// --- Mute State Persistence (Using Cookies) ---
+// --- Mute State Persistence (Using localStorage) ---
 function loadMuteState() {
-    const mutedCookie = getCookie('quizMuted');
-    isMuted = mutedCookie === 'true'; // Convert string 'true' to boolean
+    const mutedState = localStorage.getItem('quizMuted'); // Use localStorage.getItem
+    isMuted = mutedState === 'true'; // localStorage stores strings
     updateMuteButtonIcon();
 }
+
 function saveMuteState() {
-    setCookie('quizMuted', isMuted, 365); // Save boolean state as string
+    localStorage.setItem('quizMuted', isMuted); // Use localStorage.setItem
 }
+
 function updateMuteButtonIcon() {
-     if (muteIcon) {
-         muteIcon.className = isMuted ? 'fas fa-volume-xmark' : 'fas fa-volume-high';
-         muteButton.title = isMuted ? 'Unmute Sounds' : 'Mute Sounds';
-     }
-}
-function toggleMute() {
-    isMuted = !isMuted;
-    updateMuteButtonIcon();
-    saveMuteState();
-    // Optional: Play a small click sound on toggle itself? Maybe not needed.
-    // if (!isMuted && synth) { // Play a tiny sound when unmuting
-    //     startAudioContext().then(() => synth?.triggerAttackRelease("A5", "32n"));
-    // }
+    const muteIcon = muteButton ? muteButton.querySelector('i') : null; // Find icon safely
+    if (!muteButton || !muteIcon) return; // Exit if elements not found
+
+    if (isMuted) {
+        muteIcon.classList.remove('fa-volume-high');
+        muteIcon.classList.add('fa-volume-xmark');
+    } else {
+        muteIcon.classList.remove('fa-volume-xmark');
+        muteIcon.classList.add('fa-volume-high');
+    }
 }
 
 // --- Quiz Logic ---
@@ -349,6 +386,10 @@ function backToMenu() {
 
 // --- Initialization ---
 function init() {
+    if (!quizSelectionContainer) {
+        console.error("Quiz selection container not found!");
+        return;
+    }
     quizSelectionContainer.innerHTML = '';
     createQuizSets();
     loadScores(); // Load scores
@@ -357,21 +398,38 @@ function init() {
     for (let i = 1; i <= quizSets.length; i++) {
         const button = document.createElement('button');
         button.textContent = `Quiz ${i}`;
-        button.classList.add('btn', 'btn-primary'); // Use the new primary blue style
+        // Apply base button styles and the light blue style to all quiz buttons
+        button.classList.add('btn', 'btn-quiz-1'); // Assuming btn-quiz-1 is defined in CSS
 
         button.onclick = () => startQuiz(i);
         quizSelectionContainer.appendChild(button);
     }
     // Event listeners
-    submitAnswerButton.addEventListener('click', handleSubmitAnswer);
-    backToMenuButton.addEventListener('click', backToMenu);
-    backToMenuResultsButton.addEventListener('click', backToMenu);
-    resetScoresButton.addEventListener('click', resetAllScores);
-    reviewQuizButton.addEventListener('click', displayReview);
-    backToResultsButton.addEventListener('click', backToResultsScreen);
-    muteButton.addEventListener('click', toggleMute); // Add listener for mute button
+    if(submitAnswerButton) submitAnswerButton.addEventListener('click', handleSubmitAnswer);
+    if(backToMenuButton) backToMenuButton.addEventListener('click', backToMenu);
+    if(backToMenuResultsButton) backToMenuResultsButton.addEventListener('click', backToMenu);
+    if(resetScoresButton) resetScoresButton.addEventListener('click', resetAllScores);
+    if(reviewQuizButton) reviewQuizButton.addEventListener('click', displayReview);
+    if(backToResultsButton) backToResultsButton.addEventListener('click', backToResultsScreen);
 
-    updateScoreDisplay();
+    // Add listener for the new toggle scores button
+    if (toggleScoresButton && overallScoresContainer) {
+        toggleScoresButton.addEventListener('click', () => {
+            const isVisible = overallScoresContainer.classList.toggle('scores-visible');
+            toggleScoresButton.textContent = isVisible ? 'Hide My Scores' : 'Show My Scores';
+        });
+    } else {
+        console.error("Toggle scores button or overall scores container not found!");
+    }
+
+    // Ensure muteButton exists before adding listener
+    if (muteButton) {
+        muteButton.addEventListener('click', toggleMute); // Add listener for mute button
+    } else {
+        console.error("Mute button element not found!");
+    }
+
+    updateScoreDisplay(); // Update display on initial load
 }
 
 document.addEventListener('DOMContentLoaded', init);
