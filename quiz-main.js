@@ -164,6 +164,13 @@ function updateScoreDisplay() {
 }
 
 // --- Score Persistence (Using localStorage) ---
+
+/**
+ * Loads quiz scores from localStorage.
+ * Parses the stored JSON string into the quizScores object.
+ * If no scores are found or parsing fails, initializes quizScores as an empty object.
+ * Updates the score display on the start screen.
+ */
 function loadScores() {
     const storedScores = localStorage.getItem('quranQuizScores'); // Use localStorage.getItem
     if (storedScores) {
@@ -179,6 +186,11 @@ function loadScores() {
     updateScoreDisplay();
 }
 
+/**
+ * Saves the current quizScores object to localStorage.
+ * Converts the quizScores object into a JSON string before storing.
+ * Updates the score display on the start screen.
+ */
 function saveScores() {
     try {
         const scoresString = JSON.stringify(quizScores);
@@ -189,6 +201,13 @@ function saveScores() {
     updateScoreDisplay();
 }
 
+/**
+ * Resets all stored quiz scores.
+ * Asks for user confirmation before proceeding.
+ * Removes the score data from localStorage.
+ * Resets the in-memory quizScores object.
+ * Updates the score display on the start screen.
+ */
 function resetAllScores() {
      if (confirm("Are you sure you want to reset all your scores? This cannot be undone.")) {
          localStorage.removeItem('quranQuizScores'); // Use localStorage.removeItem
@@ -198,12 +217,21 @@ function resetAllScores() {
 }
 
 // --- Mute State Persistence (Using localStorage) ---
+
+/**
+ * Loads the mute state (true/false) from localStorage.
+ * Updates the global isMuted variable.
+ * Updates the mute button icon accordingly.
+ */
 function loadMuteState() {
     const mutedState = localStorage.getItem('quizMuted'); // Use localStorage.getItem
     isMuted = mutedState === 'true'; // localStorage stores strings
     updateMuteButtonIcon();
 }
 
+/**
+ * Saves the current mute state (isMuted variable) to localStorage.
+ */
 function saveMuteState() {
     localStorage.setItem('quizMuted', isMuted); // Use localStorage.setItem
 }
