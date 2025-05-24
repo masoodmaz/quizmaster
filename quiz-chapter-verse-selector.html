@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Surah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* Light gray background */
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+        }
+        label {
+            font-weight: 600;
+            color: #374151; /* Gray-700 */
+        }
+        select {
+            appearance: none; /* Remove default arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem; /* Make space for the arrow */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Select a Surah</h1>
+        
+        <label for="surah-select" class="block text-sm font-medium text-gray-700 mb-2">Choose a Surah:</label>
+        <select id="surah-select" name="surahs" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="">--Please choose an option--</option>
+            </select>
+
+        <div id="selected-surah-info" class="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-md text-indigo-700 hidden">
+            You selected: <span id="surah-name-display" class="font-semibold"></span>
+        </div>
+    </div>
+
+    <script>
+        // Data for Surahs including Arabic name, English transliteration, and index.
+        // In a real application, this data would come from parsing the XML file or a dedicated API.
+        const surahs = [
+            { index: "1", name: "الفاتحة", transliteration: "Al-Fatiha" },
+            { index: "2", name: "البقرة", transliteration: "Al-Baqarah" },
+            { index: "3", name: "آل عمران", transliteration: "Aal-Imran" },
+            { index: "4", name: "النساء", transliteration: "An-Nisa" },
+            { index: "5", name: "المائدة", transliteration: "Al-Ma'idah" },
+            { index: "6", name: "الأنعام", transliteration: "Al-An'am" },
+            { index: "7", name: "الأعراف", transliteration: "Al-A'raf" },
+            { index: "8", name: "الأنفال", transliteration: "Al-Anfal" },
+            { index: "9", name: "التوبة", transliteration: "At-Tawbah" },
+            { index: "10", name: "يونس", transliteration: "Yunus" },
+            { index: "11", name: "هود", transliteration: "Hud" },
+            { index: "12", name: "يوسف", transliteration: "Yusuf" },
+            { index: "13", name: "الرعد", transliteration: "Ar-Ra'd" },
+            { index: "14", name: "ابراهيم", transliteration: "Ibrahim" },
+            { index: "15", name: "الحجر", transliteration: "Al-Hijr" },
+            { index: "16", name: "النحل", transliteration: "An-Nahl" },
+            { index: "17", name: "الإسراء", transliteration: "Al-Isra" },
+            { index: "18", name: "الكهف", transliteration: "Al-Kahf" },
+            { index: "19", name: "مريم", transliteration: "Maryam" },
+            { index: "20", name: "طه", transliteration: "Taha" },
+            { index: "21", name: "الأنبياء", transliteration: "Al-Anbiya" },
+            { index: "22", name: "الحج", transliteration: "Al-Hajj" },
+            { index: "23", name: "المؤمنون", transliteration: "Al-Mu'minun" },
+            { index: "24", name: "النور", transliteration: "An-Nur" },
+            { index: "25", name: "الفرقان", transliteration: "Al-Furqan" },
+            { index: "26", name: "الشعراء", transliteration: "Ash-Shu'ara" },
+            { index: "27", name: "النمل", transliteration: "An-Naml" },
+            { index: "28", name: "القصص", transliteration: "Al-Qasas" },
+            { index: "29", name: "العنكبوت", transliteration: "Al-Ankabut" },
+            { index: "30", name: "الروم", transliteration: "Ar-Rum" },
+            { index: "31", name: "لقمان", transliteration: "Luqman" },
+            { index: "32", name: "السجدة", transliteration: "As-Sajdah" },
+            { index: "33", name: "الأحزاب", transliteration: "Al-Ahzab" },
+            { index: "34", name: "سبإ", transliteration: "Saba" },
+            { index: "35", name: "فاطر", transliteration: "Fatir" },
+            { index: "36", name: "يس", transliteration: "Ya-Sin" },
+            { index: "37", name: "الصافات", transliteration: "As-Saffat" },
+            { index: "38", name: "ص", transliteration: "Sad" },
+            { index: "39", name: "الزمر", transliteration: "Az-Zumar" },
+            { index: "40", name: "غافر", transliteration: "Ghafir" },
+            { index: "41", name: "فصلت", transliteration: "Fussilat" },
+            { index: "42", name: "الشورى", transliteration: "Ash-Shura" },
+            { index: "43", name: "الزخرف", transliteration: "Az-Zukhruf" },
+            { index: "44", name: "الدخان", transliteration: "Ad-Dukhan" },
+            { index: "45", name: "الجاثية", transliteration: "Al-Jathiyah" },
+            { index: "46", name: "الأحقاف", transliteration: "Al-Ahqaf" },
+            { index: "47", name: "محمد", transliteration: "Muhammad" },
+            { index: "48", name: "الفتح", transliteration: "Al-Fath" },
+            { index: "49", name: "الحجرات", transliteration: "Al-Hujurat" },
+            { index: "50", name: "ق", transliteration: "Qaf" },
+            { index: "51", name: "الذاريات", transliteration: "Adh-Dhariyat" },
+            { index: "52", name: "الطور", transliteration: "At-Tur" },
+            { index: "53", name: "النجم", transliteration: "An-Najm" },
+            { index: "54", name: "القمر", transliteration: "Al-Qamar" },
+            { index: "55", name: "الرحمن", transliteration: "Ar-Rahman" },
+            { index: "56", name: "الواقعة", transliteration: "Al-Waqi'ah" },
+            { index: "57", name: "الحديد", transliteration: "Al-Hadid" },
+            { index: "58", name: "المجادلة", transliteration: "Al-Mujadila" },
+            { index: "59", name: "الحشر", transliteration: "Al-Hashr" },
+            { index: "60", name: "الممتحنة", transliteration: "Al-Mumtahanah" },
+            { index: "61", name: "الصف", transliteration: "As-Saff" },
+            { index: "62", name: "الجمعة", transliteration: "Al-Jumu'ah" },
+            { index: "63", name: "المنافقون", transliteration: "Al-Munafiqun" },
+            { index: "64", name: "التغابن", transliteration: "At-Taghabun" },
+            { index: "65", name: "الطلاق", transliteration: "At-Talaq" },
+            { index: "66", name: "التحريم", transliteration: "At-Tahrim" },
+            { index: "67", name: "الملك", transliteration: "Al-Mulk" },
+            { index: "68", name: "القلم", transliteration: "Al-Qalam" },
+            { index: "69", name: "الحاقة", transliteration: "Al-Haqqah" },
+            { index: "70", name: "المعارج", transliteration: "Al-Ma'arij" },
+            { index: "71", name: "نوح", transliteration: "Nuh" },
+            { index: "72", name: "الجن", transliteration: "Al-Jinn" },
+            { index: "73", name: "المزمل", transliteration: "Al-Muzzammil" },
+            { index: "74", name: "المدثر", transliteration: "Al-Muddaththir" },
+            { index: "75", name: "القيامة", transliteration: "Al-Qiyamah" },
+            { index: "76", name: "الانسان", transliteration: "Al-Insan" },
+            { index: "77", name: "المرسلات", transliteration: "Al-Mursalat" },
+            { index: "78", name: "النبإ", transliteration: "An-Naba" },
+            { index: "79", name: "النازعات", transliteration: "An-Nazi'at" },
+            { index: "80", name: "عبس", transliteration: "'Abasa" },
+            { index: "81", name: "التكوير", transliteration: "At-Takwir" },
+            { index: "82", name: "الإنفطار", transliteration: "Al-Infitar" },
+            { index: "83", name: "المطففين", transliteration: "Al-Mutaffifin" },
+            { index: "84", name: "الإنشقاق", transliteration: "Al-Inshiqaq" },
+            { index: "85", name: "البروج", transliteration: "Al-Buruj" },
+            { index: "86", name: "الطارق", transliteration: "At-Tariq" },
+            { index: "87", name: "الأعلى", transliteration: "Al-A'la" },
+            { index: "88", name: "الغاشية", transliteration: "Al-Ghashiyah" },
+            { index: "89", name: "الفجر", transliteration: "Al-Fajr" },
+            { index: "90", name: "البلد", transliteration: "Al-Balad" },
+            { index: "91", name: "الشمس", transliteration: "Ash-Shams" },
+            { index: "92", name: "الليل", transliteration: "Al-Layl" },
+            { index: "93", name: "الضحى", transliteration: "Ad-Duhaa" },
+            { index: "94", name: "الشرح", transliteration: "Ash-Sharh" },
+            { index: "95", name: "التين", transliteration: "At-Tin" },
+            { index: "96", name: "العلق", transliteration: "Al-'Alaq" },
+            { index: "97", name: "القدر", transliteration: "Al-Qadr" },
+            { index: "98", name: "البينة", transliteration: "Al-Bayyinah" },
+            { index: "99", name: "الزلزلة", transliteration: "Az-Zalzalah" },
+            { index: "100", name: "العاديات", transliteration: "Al-'Adiyat" },
+            { index: "101", name: "القارعة", transliteration: "Al-Qari'ah" },
+            { index: "102", name: "التكاثر", transliteration: "At-Takathur" },
+            { index: "103", name: "العصر", transliteration: "Al-'Asr" },
+            { index: "104", name: "الهمزة", transliteration: "Al-Humazah" },
+            { index: "105", name: "الفيل", transliteration: "Al-Fil" },
+            { index: "106", name: "قريش", transliteration: "Quraysh" },
+            { index: "107", name: "الماعون", transliteration: "Al-Ma'un" },
+            { index: "108", name: "الكوثر", transliteration: "Al-Kawthar" },
+            { index: "109", name: "الكافرون", transliteration: "Al-Kafirun" },
+            { index: "110", name: "النصر", transliteration: "An-Nasr" },
+            { index: "111", name: "المسد", transliteration: "Al-Masad" },
+            { index: "112", name: "الإخلاص", transliteration: "Al-Ikhlas" },
+            { index: "113", name: "الفلق", transliteration: "Al-Falaq" },
+            { index: "114", name: "الناس", transliteration: "An-Nas" }
+        ];
+
+        const surahSelect = document.getElementById('surah-select');
+        const selectedSurahInfoDiv = document.getElementById('selected-surah-info');
+        const surahNameDisplay = document.getElementById('surah-name-display');
+
+        // Function to populate the dropdown
+        function populateSurahs() {
+            surahs.forEach(surah => {
+                const option = document.createElement('option');
+                option.value = surah.index;
+                // Display: Number. Arabic Name (English Transliteration)
+                option.textContent = `${surah.index}. ${surah.name} (${surah.transliteration})`;
+                surahSelect.appendChild(option);
+            });
+        }
+
+        // Event listener for when a Surah is selected
+        surahSelect.addEventListener('change', function() {
+            if (this.value) {
+                const selectedSurah = surahs.find(s => s.index === this.value);
+                if (selectedSurah) {
+                    // Display selected Surah's Number, Arabic Name, and Transliteration
+                    surahNameDisplay.textContent = `${selectedSurah.index}. ${selectedSurah.name} (${selectedSurah.transliteration})`;
+                    selectedSurahInfoDiv.classList.remove('hidden');
+                    if (selectedSurah.index === "1") {
+                        startSurahFatihahQuiz();
+                    } else {
+                        alert('Quiz for this Surah is not implemented yet.');
+                    }
+                }
+            } else {
+                selectedSurahInfoDiv.classList.add('hidden');
+            }
+        });
+
+        // Call the function to populate the dropdown when the page loads
+        window.onload = populateSurahs;
+    </script>
+</body>
+</html>
