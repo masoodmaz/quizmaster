@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Open Quiz Application",
+			"type": "shell",
+			"command": "start",
+			"args": [
+				"quiz-main.html"
+			],
+			"group": "build",
+			"isBackground": false
+		}
+	]
+}
