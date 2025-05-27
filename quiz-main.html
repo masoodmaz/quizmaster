@@ -24,12 +24,14 @@
 
         <div id="start-screen" class="w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-xl relative">
                         <h2 class="text-xl font-semibold mb-4 text-center text-gray-700">Juz-30 Quiz</h2>
+            <!-- Surah quiz buttons container -->
+                        <div id="surah-quiz-buttons-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-6"></div>
             <div class="mb-6">
                 <label for="surah-select" class="block text-sm font-medium text-gray-700 mb-2">Choose a Surah:</label>
                 <select id="surah-select" name="surahs" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="">--Please choose an option--</option>
                 </select>
-                <div id="selected-surah-info" class="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-md text-indigo-700 hidden">
+                <div id="selected-surah-info" class="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-md text-indigo-700 hidden" style="display:none;">
                      <span id="surah-name-display" class="font-semibold"></span>
                 </div>
                 <div class="mt-4">
@@ -158,22 +160,18 @@
             });
         }
 
-        surahSelect.addEventListener('change', function() {
+                surahSelect.addEventListener('change', function() {
             if (this.value) {
                 const selectedSurah = surahs.find(s => s.index === this.value);
                 if (!isNaN(selectedSurah.index)) {
                     surahNameDisplay.textContent = `${selectedSurah.index}. ${selectedSurah.name} (${selectedSurah.transliteration})`;
                     selectedSurahInfoDiv.classList.remove('hidden');
-                    startQuiz(selectedSurah.index,selectedSurah.transliteration);
-                    // Launch Surah Fatihah quiz if selected
+                    // Do NOT start quiz here. Only show info and let JS handle quiz button generation.
                 }
                 else {
                         alert('Please select a valid Surah.');
                         return;
                     }
-
-                   
-                
             } else {
                 selectedSurahInfoDiv.classList.add('hidden');
             }
