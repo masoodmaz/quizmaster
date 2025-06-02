@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quranic Words Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="quiz-main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>   
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex items-center justify-center font-sans">
+    <div class="card w-full max-w-2xl mx-auto">
+        <button id="mute-button" title="Mute/Unmute Sounds">
+            <i class="fas fa-volume-high"></i> </button>
+
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Quranic Words Quiz</h1>
+        <p class="text-center text-gray-600 mb-4">Test your knowledge of Quranic vocabulary!</p>
+        
+        <!-- Breadcrumb Navigation -->
+        <div class="w-full max-w-md mx-auto">
+          <nav class="text-sm mb-4 pl-2">
+            <a href="index.html" class="text-blue-600 hover:underline">Home</a>
+            <span class="mx-2 text-gray-400">/</span>
+            <span>Quiz Main</span>
+          </nav>
+        </div>
+
+        <div id="start-screen" class="w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-xl relative">
+                        <h2 class="text-xl font-semibold mb-4 text-center text-gray-700">Surah Al-Fatiha Quiz</h2>
+            <!-- Surah quiz buttons container -->
+                        <div id="surah-quiz-buttons-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-6"></div>
+            <div class="mb-6">
+                <label for="surah-select" class="block text-sm font-medium text-gray-700 mb-2 hidden" >Choose a Surah:</label>
+                <select id="surah-select" name="surahs" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm hidden">
+                </select>
+                <div id="selected-surah-info" class="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-md text-indigo-700 hidden" style="display:none;">
+                     <span id="surah-name-display" class="font-semibold"></span>
+                </div>
+                <div class="mt-4">
+                    
+                    <label for="num-questions-slider" class="block text-sm font-medium text-gray-700 mb-2">Number of Questions:</label>
+                    <input type="range" id="num-questions-slider" min="10" max="50" value="10" step="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <span id="num-questions-value" class="text-sm text-gray-700">10</span>
+                </div>
+            </div>
+            <h2 class="text-xl font-semibold mb-4 text-center text-gray-700 hidden">Level-1 Quiz (Commonly used words)</h2>
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-6 hidden">
+                <!-- Dynamically populated buttons for quizzes -->
+            </div>
+            <button id="toggle-scores-button" class="btn btn-secondary w-full mb-4">Show My Scores</button>
+            <div id="overall-scores" class="mb-6 p-4 bg-gray-50 rounded-lg shadow-inner">
+                <h3 class="text-lg font-semibold mb-3 text-gray-700">Your Scores:</h3>
+                <ul id="score-list" class="score-list max-h-48 overflow-y-auto">
+                    <li id="no-scores" class="text-gray-500">No quizzes completed yet.</li>
+                </ul>
+                <button id="reset-all-scores" class="btn btn-danger w-full mt-4 text-xs hidden">Reset All Scores</button>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div class="card-question">
+                <div class="flex justify-between items-center mb-4 text-gray-600">
+                    <span id="quiz-title" class="btn btn-secondary">Quiz X</span>
+                    <span id="score" class="font-semibold">Question: 0 / 0</span>
+                </div>
+                <div id="question-container" class="text-center mb-6">
+                    <p class="text-gray-600 mb-2">What is the meaning of:</p>
+                    <div id="arabic-word" class="arabic-text"></div>
+                    <div id="options-container" class="options-container mt-4">
+                        <!-- Options will be dynamically populated here -->
+                    </div>
+                </div>
+                <button id="submit-answer" class="btn btn-primary w-full mb-4 hidden">Submit Answer</button>
+                <div id="feedback-message" class="message-box"></div>
+            </div>
+            <div class="flex justify-start mt-6">
+                <button id="back-to-menu" class="btn btn-secondary">Back to Menu</button>
+            </div>
+        </div>
+
+        <div id="results-screen" class="hidden text-center">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Quiz Complete!</h2>
+            <p id="results-message" class="text-lg font-semibold mb-2"></p>
+            <p id="final-score" class="text-xl mb-6 text-gray-700">Your score: X / Y</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                 <button id="review-quiz" class="btn btn-review-outline">Review Quiz</button>
+                <button id="back-to-menu-results" class="btn btn-primary">Back to Menu</button>
+            </div>
+        </div>
+
+        <div id="review-screen" class="hidden">
+             <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">Quiz Review</h2>
+             <div id="review-container" class="space-y-4 max-h-[60vh] overflow-y-auto p-1">
+                 </div>
+             <div class="text-center mt-6">
+                 <button id="back-to-results" class="btn btn-primary">Back to Results</button>
+             </div>
+        </div>
+
+    </div>
+<script>
+        const surahs = [
+                        { index: "1", name: "الفاتحة", transliteration: "Al-Fatiha" },
+
+            // Add other Surahs here if needed
+        ];
+
+        const surahSelect = document.getElementById('surah-select');
+        const selectedSurahInfoDiv = document.getElementById('selected-surah-info');
+        const surahNameDisplay = document.getElementById('surah-name-display');
+        
+
+        function populateSurahs() {
+            surahs.forEach(surah => {
+                const option = document.createElement('option');
+                // get value as a numeric Surah number
+                option.value = parseInt(surah.index, 10);
+                option.textContent = `${surah.index}. ${surah.name} (${surah.transliteration})`;
+                surahSelect.appendChild(option);
+            });
+            // After populating surahs, trigger populateSurahQuizButtons if available
+            if (typeof populateSurahQuizButtons === 'function') {
+                const numQuestionsSlider = document.getElementById('num-questions-slider');
+                const surahIndex = surahSelect && surahSelect.value ? surahSelect.value : '';
+                const questionsPerQuiz = numQuestionsSlider ? parseInt(numQuestionsSlider.value, 10) : 10;
+                populateSurahQuizButtons(surahIndex, questionsPerQuiz);
+            }
+        }
+
+                surahSelect.addEventListener('change', function() {
+            if (this.value) {
+                const selectedSurah = surahs.find(s => s.index === this.value);
+                if (!isNaN(selectedSurah.index)) {
+                    surahNameDisplay.textContent = `${selectedSurah.index}. ${selectedSurah.name} (${selectedSurah.transliteration})`;
+                    selectedSurahInfoDiv.classList.remove('hidden');
+                    // Do NOT start quiz here. Only show info and let JS handle quiz button generation.
+                }
+                else {
+                        alert('Please select a valid Surah.');
+                        return;
+                    }
+            } else {
+                selectedSurahInfoDiv.classList.add('hidden');
+            }
+});
+    
+
+        window.onload = populateSurahs;
+    // Also trigger populateSurahQuizButtons on page load if defined
+    window.addEventListener('DOMContentLoaded', function() {
+        if (typeof populateSurahQuizButtons === 'function') {
+            // You may want to pass default values, e.g., first surah and default slider value
+            const surahSelect = document.getElementById('surah-select');
+            const numQuestionsSlider = document.getElementById('num-questions-slider');
+            const surahIndex = surahSelect && surahSelect.value ? surahSelect.value : '';
+            const questionsPerQuiz = numQuestionsSlider ? parseInt(numQuestionsSlider.value, 10) : 10;
+            populateSurahQuizButtons(surahIndex, questionsPerQuiz);
+        }
+    });
+    </script>
+    <script src="quiz-main.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const resetSurahSelect = () => {
+            const sel = document.getElementById('surah-select');
+            sel.value = '';
+            document.getElementById('selected-surah-info').classList.add('hidden');
+        };
+
+        // apply to both back-to-menu buttons
+        ['back-to-menu','back-to-menu-results'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.addEventListener('click', resetSurahSelect);
+        });
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const numQuestionsSlider = document.getElementById('num-questions-slider');
+        const numQuestionsValue = document.getElementById('num-questions-value');
+
+        if (numQuestionsSlider && numQuestionsValue) {
+            // Initialize the display value
+            numQuestionsValue.textContent = numQuestionsSlider.value;
+
+            // Update the display value dynamically
+            numQuestionsSlider.addEventListener('input', () => {
+                numQuestionsValue.textContent = numQuestionsSlider.value;
+            });
+        }
+    });
+</script>
+</body>
+</html>
