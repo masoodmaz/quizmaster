@@ -547,7 +547,15 @@ function startQuizForSurahSet(surahIndex, quizSet, quizNum) {
     quizScreen.classList.remove('hidden');
     resultsScreen.classList.add('hidden');
     reviewScreen.classList.add('hidden');
-    quizTitleEl.textContent = `Surah ${surahIndex} - Quiz ${quizNum}`;
+    // Get surah name from the surahs array if available (for quiz-main2.html)
+    let surahDisplayName = `Surah ${surahIndex}`;
+    if (typeof window !== 'undefined' && window.surahs) {
+        const selectedSurah = window.surahs.find(s => s.index === surahIndex.toString());
+        if (selectedSurah) {
+            surahDisplayName = `${selectedSurah.index}. ${selectedSurah.name} (${selectedSurah.transliteration})`;
+        }
+    }
+    quizTitleEl.textContent = `${surahDisplayName} - Quiz ${quizNum}`;
     feedbackMessageEl.classList.add('hidden');
     submitAnswerButton.classList.add('hidden');
     displayQuestion();
