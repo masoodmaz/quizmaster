@@ -67,7 +67,7 @@
         <div id="quiz-screen" class="hidden">
             <div class="card-question">
                 <div class="flex justify-between items-center mb-4 text-gray-600">
-                    <span id="quiz-title" class="btn btn-secondary">Quiz X</span>
+                    <span id="quiz-title" class="btn btn-secondary">Quiz</span>
                     <span id="score" class="font-semibold">Question: 0 / 0</span>
                 </div>
                 <div id="question-container" class="text-center mb-6">
@@ -105,8 +105,8 @@
         </div>
 
     </div>
-<script>
-        const surahs = [
+<script>        // Make surahs globally accessible
+        window.surahs = [
                         { index: "1", name: "الفاتحة", transliteration: "Al-Fatiha" },
 
             // Add other Surahs here if needed
@@ -115,10 +115,8 @@
         const surahSelect = document.getElementById('surah-select');
         const selectedSurahInfoDiv = document.getElementById('selected-surah-info');
         const surahNameDisplay = document.getElementById('surah-name-display');
-        
-
-        function populateSurahs() {
-            surahs.forEach(surah => {
+            function populateSurahs() {
+            window.surahs.forEach(surah => {
                 const option = document.createElement('option');
                 // get value as a numeric Surah number
                 option.value = parseInt(surah.index, 10);
@@ -136,7 +134,7 @@
 
                 surahSelect.addEventListener('change', function() {
             if (this.value) {
-                const selectedSurah = surahs.find(s => s.index === this.value);
+                const selectedSurah = window.surahs.find(s => s.index === this.value);
                 if (!isNaN(selectedSurah.index)) {
                     surahNameDisplay.textContent = `${selectedSurah.index}. ${selectedSurah.name} (${selectedSurah.transliteration})`;
                     selectedSurahInfoDiv.classList.remove('hidden');
